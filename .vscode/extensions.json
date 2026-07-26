@@ -1,5 +1,7 @@
 {
     "recommendations": [
-        "openai.chatgpt"
+        "openai.chatgpt",
+        "sixth.sixth",
+        "google.geminicodeassist"
     ]
 }
