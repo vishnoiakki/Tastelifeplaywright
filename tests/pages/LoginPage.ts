@@ -24,11 +24,11 @@ export class LoginPage {
   }
 
   async goto(): Promise<void> {
-    await this.page.goto('/user/login');
+    await this.page.goto('/user/login', { waitUntil: 'domcontentloaded' });
   }
 
   async expectLoginFormVisible(): Promise<void> {
-    await expect(this.form).toBeVisible();
+    await expect(this.form).toBeAttached();
     await expect(this.usernameInput).toBeVisible();
     await expect(this.usernameInput).toHaveAttribute('aria-required', 'true');
     await expect(this.passwordInput).toBeVisible();

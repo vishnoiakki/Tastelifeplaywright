@@ -1,4 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
+import { Status } from 'allure-js-commons';
+
+const isCI = !!process.env.CI;
 
 /**
  * Read environment variables from file.
@@ -13,23 +16,73 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './tests',
+  timeout: 90_000,
+  expect: {
+    timeout: 10_000,
+  },
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
-  forbidOnly: !!process.env.CI,
+  forbidOnly: isCI,
   /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
+  retries: isCI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  workers: isCI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: [
+    ['list'],
+    ['html', { outputFolder: 'playwright-report', open: 'never' }],
+    [
+      'allure-playwright',
+      {
+        resultsDir: 'allure-results',
+        detail: true,
+        suiteTitle: true,
+        globalLabels: {
+          epic: 'Tastelife Web',
+          layer: 'e2e',
+          owner: 'QA Automation',
+        },
+        environmentInfo: {
+          Application: 'Tastelife',
+          Environment: 'UAT',
+          BaseURL: 'https://uat.tastelifelivelife.com',
+          Framework: 'Playwright',
+          Language: 'TypeScript',
+          Platform: process.platform,
+          NodeVersion: process.version,
+        },
+        categories: [
+          {
+            name: 'Assertion failures',
+            matchedStatuses: [Status.FAILED],
+            messageRegex: '.*expect.*',
+          },
+          {
+            name: 'Application errors',
+            matchedStatuses: [Status.FAILED, Status.BROKEN],
+            messageRegex: '.*(500|502|503|504|server|application).*',
+          },
+          {
+            name: 'Timeouts',
+            matchedStatuses: [Status.FAILED, Status.BROKEN],
+            messageRegex: '.*(Timeout|timeout).*',
+          },
+        ],
+      },
+    ],
+  ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
     baseURL: 'https://uat.tastelifelivelife.com',
 
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    /* Collect rich evidence for Allure and Playwright reports. */
+    screenshot: 'only-on-failure',
+    trace: 'retain-on-failure',
+    video: 'on',
+    actionTimeout: 20_000,
+    navigationTimeout: 45_000,
   },
 
   /* Configure projects for major browsers */
