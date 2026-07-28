@@ -58,7 +58,7 @@ export default defineConfig({
           Framework: 'Playwright',
           Language: 'TypeScript',
           TestLayer: 'End-to-end UI automation',
-          TestSuites: 'Login, Signup, Forgot Password',
+          TestSuites: 'Login, Signup, Forgot Password, Public Navigation',
           RunType: isCI ? 'CI' : 'Local',
           BrowserProject: 'Chromium',
           ValidLoginCredentials: hasValidLoginCredentials ? 'Configured' : 'Missing',

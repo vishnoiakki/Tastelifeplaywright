@@ -11,6 +11,8 @@
     "test:forgot-password:headed": "playwright test tests/forgot-password.spec.ts --project=chromium --headed",
     "test:login": "playwright test tests/login.spec.ts --project=chromium",
     "test:login:headed": "playwright test tests/login.spec.ts --headed --project=chromium",
+    "test:public-navigation": "playwright test tests/public-navigation.spec.ts --project=chromium",
+    "test:public-navigation:headed": "playwright test tests/public-navigation.spec.ts --headed --project=chromium",
     "test:signup": "playwright test tests/signup.spec.ts --project=chromium",
     "test:signup:headed": "playwright test tests/signup.spec.ts --headed --project=chromium",
     "typecheck": "tsc -p tsconfig.json --noEmit",
