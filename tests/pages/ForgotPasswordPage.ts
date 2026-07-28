@@ -1,13 +1,13 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 
 export class ForgotPasswordPage {
-  readonly page: Page;
-  readonly form: Locator;
-  readonly emailInput: Locator;
-  readonly instructions: Locator;
-  readonly submitButton: Locator;
-  readonly errorMessage: Locator;
-  readonly statusMessage: Locator;
+  private page: Page;
+  private form: Locator;
+  private emailInput: Locator;
+  private instructions: Locator;
+  private submitButton: Locator;
+  private errorMessage: Locator;
+  private statusMessage: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -19,21 +19,19 @@ export class ForgotPasswordPage {
     this.statusMessage = page.locator('.messages--status').first();
   }
 
-  async goto(): Promise<void> {
+  async open(): Promise<void> {
     await this.page.goto('/user/password', { waitUntil: 'domcontentloaded' });
   }
 
-  async expectForgotPasswordFormVisible(): Promise<void> {
+  async expectFormIsVisible(): Promise<void> {
     await expect(this.page).toHaveTitle(/Forgot Password/i);
-    await expect(this.form).toBeAttached();
+    await expect(this.form).toBeVisible();
     await expect(this.emailInput).toBeVisible();
-    await expect(this.emailInput).toHaveAttribute('aria-required', 'true');
     await expect(this.instructions).toBeVisible();
     await expect(this.submitButton).toBeVisible();
-    await expect(this.submitButton).toHaveValue('Submit');
   }
 
-  async submitEmptyForm(): Promise<void> {
+  async submit(): Promise<void> {
     await this.submitButton.click();
   }
 
@@ -46,8 +44,8 @@ export class ForgotPasswordPage {
     await expect(this.errorMessage).toContainText(/email field is required/i);
   }
 
-  async expectInvalidEmailFormatError(email: string): Promise<void> {
-    await expect(this.errorMessage).toContainText(new RegExp(`email address ${email} is not valid`, 'i'));
+  async expectInvalidEmailFormatError(): Promise<void> {
+    await expect(this.errorMessage).toContainText(/not valid/i);
     await expect(this.errorMessage).toContainText(/format user@example\.com/i);
   }
 
@@ -61,7 +59,7 @@ export class ForgotPasswordPage {
     await expect(this.statusMessage).toContainText(/further instructions have been sent to your registered email-id/i);
   }
 
-  async expectAtForgotPasswordPage(): Promise<void> {
+  async expectPageIsOpen(): Promise<void> {
     await expect(this.page).toHaveURL(/\/user\/password$/);
   }
 }

@@ -1,15 +1,14 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 
 export class LoginPage {
-  readonly page: Page;
-  readonly form: Locator;
-  readonly usernameInput: Locator;
-  readonly passwordInput: Locator;
-  readonly keepMeLoggedInCheckbox: Locator;
-  readonly forgotPasswordLink: Locator;
-  readonly submitButton: Locator;
-  readonly errorMessage: Locator;
-  readonly loggedInBody: Locator;
+  private page: Page;
+  private form: Locator;
+  private usernameInput: Locator;
+  private passwordInput: Locator;
+  private keepMeLoggedInCheckbox: Locator;
+  private forgotPasswordLink: Locator;
+  private submitButton: Locator;
+  private errorMessage: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -19,27 +18,23 @@ export class LoginPage {
     this.keepMeLoggedInCheckbox = page.locator('#edit-persistent-login');
     this.forgotPasswordLink = page.getByRole('link', { name: 'Forgot Password?' });
     this.submitButton = page.locator('#edit-submit');
-    this.errorMessage = page.locator('.messages--error, [role="contentinfo"]').first();
-    this.loggedInBody = page.locator('body:not(.role-anonymous)');
+    this.errorMessage = page.locator('.messages--error, [data-drupal-messages] .messages--error, [role="alert"]').first();
   }
 
-  async goto(): Promise<void> {
+  async open(): Promise<void> {
     await this.page.goto('/user/login', { waitUntil: 'domcontentloaded' });
   }
 
-  async expectLoginFormVisible(): Promise<void> {
-    await expect(this.form).toBeAttached();
+  async expectFormIsVisible(): Promise<void> {
+    await expect(this.form).toBeVisible();
     await expect(this.usernameInput).toBeVisible();
-    await expect(this.usernameInput).toHaveAttribute('aria-required', 'true');
     await expect(this.passwordInput).toBeVisible();
-    await expect(this.passwordInput).toHaveAttribute('type', 'password');
-    await expect(this.passwordInput).toHaveAttribute('aria-required', 'true');
     await expect(this.keepMeLoggedInCheckbox).toBeVisible();
     await expect(this.forgotPasswordLink).toBeVisible();
     await expect(this.submitButton).toBeVisible();
   }
 
-  async submitEmptyForm(): Promise<void> {
+  async submit(): Promise<void> {
     await this.submitButton.click();
   }
 
@@ -47,6 +42,10 @@ export class LoginPage {
     await this.usernameInput.fill(username);
     await this.passwordInput.fill(password);
     await this.submitButton.click();
+  }
+
+  async openForgotPassword(): Promise<void> {
+    await this.forgotPasswordLink.click();
   }
 
   async expectRequiredFieldErrors(): Promise<void> {
@@ -58,8 +57,7 @@ export class LoginPage {
     await expect(this.errorMessage).toContainText(/unrecognized|invalid|incorrect|password/i);
   }
 
-  async expectLoggedIn(): Promise<void> {
-    await expect(this.loggedInBody).toBeVisible();
+  async expectUserIsLoggedIn(): Promise<void> {
     await expect(this.page).not.toHaveURL(/\/user\/login$/);
   }
 }

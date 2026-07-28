@@ -17,11 +17,24 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
+    - name: Type check
+      run: npm run typecheck
     - name: Run Playwright tests
-      run: npx playwright test
+      env:
+        TASTELIFE_BASE_URL: https://uat.tastelifelivelife.com
+        TASTELIFE_VALID_USERNAME: ${{ secrets.TASTELIFE_VALID_USERNAME }}
+        TASTELIFE_VALID_PASSWORD: ${{ secrets.TASTELIFE_VALID_PASSWORD }}
+        TASTELIFE_REGISTERED_EMAIL: ${{ secrets.TASTELIFE_REGISTERED_EMAIL }}
+      run: npm test
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
         name: playwright-report
         path: playwright-report/
+        retention-days: 30
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: allure-results
+        path: allure-results/
         retention-days: 30

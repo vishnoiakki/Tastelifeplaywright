@@ -1,6 +1,7 @@
 
 # Playwright
 node_modules/
+.env
 /test-results/
 /playwright-report/
 /allure-results/
@@ -8,3 +9,9 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Local/editor-only files
+.vscode/
+
+# Avoid keeping a duplicate nested copy of this framework
+Tastelifeplaywright/
